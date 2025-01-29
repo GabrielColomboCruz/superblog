@@ -1,4 +1,6 @@
+"use client";
 import { useEffect, useState } from "react";
+import Sidebar from "../_components/SideMenu";
 
 const limit = 10; // How many posts to load at a time
 
@@ -51,17 +53,20 @@ export default function PostList() {
   }, [loading]);
 
   return (
-    <div>
-      {posts.map((post) => (
-        <div key={post.id} className="p-4 border-b">
-          <h2 className="text-xl font-bold">{post.titulo}</h2>
-          <p className="text-sm text-gray-500">Category: {post.categoria}</p>
-          <p className="text-sm text-gray-500">Posted by: {post.usuario}</p>
-          <p className="mt-2">{post.conteudo}</p>
-        </div>
-      ))}
-      {loading && <p>Loading...</p>}
-      {!hasMore && <p>No more posts.</p>}
-    </div>
+    <>
+      <Sidebar></Sidebar>
+      <div>
+        {posts.map((post) => (
+          <div key={post.id} className="p-4 border-b">
+            <h2 className="text-xl font-bold">{post.titulo}</h2>
+            <p className="text-sm text-gray-500">Category: {post.categoria}</p>
+            <p className="text-sm text-gray-500">Posted by: {post.usuario}</p>
+            <p className="mt-2">{post.conteudo}</p>
+          </div>
+        ))}
+        {loading && <p>Loading...</p>}
+        {!hasMore && <p>No more posts.</p>}
+      </div>
+    </>
   );
 }

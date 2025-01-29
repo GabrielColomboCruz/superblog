@@ -56,3 +56,21 @@ export const postsCreate = async (Titulo, Conteudo, Usuario, Categoria) => {
     console.error("Database error:", error);
   }
 };
+
+export const postsDoom = async () => {
+  try {
+    const limit = "10";
+    const offset = "0";
+
+    const posts = await PostCRUD("list", {
+      Limit: Number(limit),
+      Offset: Number(offset),
+    });
+    console.log(posts);
+    var string = JSON.stringify(posts);
+    var json = JSON.parse(string);
+    return json;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+  }
+};

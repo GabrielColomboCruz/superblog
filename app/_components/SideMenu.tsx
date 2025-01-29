@@ -2,32 +2,29 @@
 import { getSession, signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-interface SidebarProps {
-  userName: string; // Define the type for userName
-}
-const getUsername = async () => {
-  try {
-    const username = (await getSession()).user.name;
-    return username;
-  } catch (error) {
-    console.error("Failed get session", error);
-  }
-};
-async function myFunction() {
-  const session = await getSession();
-  return session.user.name;
-  /* ... */
-}
+const Sidebar = () => {
+  const [session, setSession] = useState(null);
 
-const Sidebar: React.FC<SidebarProps> = () => {
+  useEffect(() => {
+    const fetchSession = async () => {
+      const userSession = await getSession();
+      setSession(userSession);
+    };
+
+    fetchSession();
+  }, []);
+
+  if (!session) return <p>Loading...</p>;
+
   return (
     <div className="flex flex-col h-screen w-64 bg-gray-800 text-white fixed">
       {/* TopBar */}
 
       <div className="p-4">
         <h1 className="text-3xl font-extrabold font-serif">
-          <Link href="/">TopBar</Link>
+          <Link href="/">SuperBlog</Link>
         </h1>
       </div>
 
@@ -50,6 +47,22 @@ const Sidebar: React.FC<SidebarProps> = () => {
               Post
             </Link>
           </li>
+          <li>
+            <Link
+              href="/dashboard"
+              className="block py-2 px-4 rounded hover:bg-gray-700"
+            >
+              !!!Dashboard!!!
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/profile"
+              className="block py-2 px-4 rounded hover:bg-gray-700"
+            >
+              Profile
+            </Link>
+          </li>
         </ul>
 
         {/* Last Five Visits Placeholders */}
@@ -68,7 +81,9 @@ const Sidebar: React.FC<SidebarProps> = () => {
       {/* User Info and Sign Out */}
       <div className="p-4">
         <p className="mb-2">Signed in as:</p>
-        <p className="font-semibold">{}</p>
+        <p className="font-semibold">
+          <Link href="/profile">{session.user.name}</Link>
+        </p>
         <button
           onClick={() => signOut()}
           className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
