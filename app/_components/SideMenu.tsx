@@ -52,7 +52,7 @@ const Sidebar = () => {
               href="/dashboard"
               className="block py-2 px-4 rounded hover:bg-gray-700"
             >
-              !!!Dashboard!!!
+              Dashboard
             </Link>
           </li>
           <li>

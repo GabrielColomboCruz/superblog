@@ -10,8 +10,8 @@ interface UsuarioParams {
   Conteudo?: string;
   Usuario?: number;
   Categoria?: number;
-  Limit?: number;
-  Offset?: number;
+  Limit?: string;
+  Offset?: string;
 }
 
 // Tipagem para resultados do CRUD
@@ -121,8 +121,8 @@ async function PostsCRUD(
         break;
       case "list":
         values = [
-          sanitizeValue(params.Limit || 10), // Default to 10 posts
-          sanitizeValue(params.Offset || 0), // Default to 0 (start from beginning)
+          sanitizeValue(params.Limit || "10"), // Default to 10 posts
+          sanitizeValue(params.Offset || "0"), // Default to 0 (start from beginning)
         ];
         break;
     }

@@ -31,6 +31,7 @@ export default function Post({ userId, postId, categoryId }: PostProps) {
         let result;
         if (postId) {
           result = await postsIdRead(postId);
+          console.log("ID Search");
         } else if (userId) {
           result = await postsUsuarioRead(userId);
         } else if (categoryId) {

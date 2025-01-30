@@ -22,9 +22,9 @@ export const postsUsuarioRead = async (Usuario) => {
     console.error("Database error:", error);
   }
 };
-export const postsIdRead = async (Usuario) => {
+export const postsIdRead = async (Id) => {
   try {
-    const results = await PostCRUD("idread", { Usuario });
+    const results = await PostCRUD("idread", { Id });
     var string = JSON.stringify(results);
     var json = JSON.parse(string);
     return json;
@@ -32,9 +32,9 @@ export const postsIdRead = async (Usuario) => {
     console.error("Database error:", error);
   }
 };
-export const postsCategoryRead = async (Usuario) => {
+export const postsCategoryRead = async (Categoria) => {
   try {
-    const results = await PostCRUD("categoriaread", { Usuario });
+    const results = await PostCRUD("categoriaread", { Categoria });
     var string = JSON.stringify(results);
     var json = JSON.parse(string);
     return json;
@@ -63,8 +63,8 @@ export const postsDoom = async () => {
     const offset = "0";
 
     const posts = await PostCRUD("list", {
-      Limit: Number(limit),
-      Offset: Number(offset),
+      Limit: String(limit),
+      Offset: String(offset),
     });
     console.log(posts);
     var string = JSON.stringify(posts);

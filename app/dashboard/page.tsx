@@ -1,72 +1,84 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import Post from "@/app/_components/Post";
+import PostData from "../_components/PostData";
 import Sidebar from "../_components/SideMenu";
-
-const limit = 10; // How many posts to load at a time
-
-export default function PostList() {
-  const [posts, setPosts] = useState<any[]>([]);
+const Doomscroller = () => {
+  const [posts, setPosts] = useState([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(true); // Track if more posts exist
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  // Fetch posts function
-  const loadPosts = async () => {
-    if (loading || !hasMore) return; // Avoid multiple requests
+  // Fetch posts from API
+  const fetchPosts = async () => {
+    if (loading || !hasMore) return; // Prevent unnecessary fetches
 
     setLoading(true);
+    console.log("Fetching posts at offset:", offset);
+    console.log("Fetching posts: Begin");
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay fetchPosts
+    console.log("Fetching posts: End");
     try {
-      const res = await fetch(`/api/posts?limit=${limit}&offset=${offset}`);
+      const res = await fetch(`/api/posts?limit=10&offset=${offset}`);
+      if (!res.ok) throw new Error("Failed to fetch posts");
+
       const newPosts = await res.json();
 
-      setPosts((prev) => [...prev, ...newPosts]); // Append new posts
-      setOffset((prev) => prev + limit); // Increase offset
-
-      if (newPosts.length < limit) {
+      if (newPosts.length === 0) {
         setHasMore(false); // No more posts to load
+      } else {
+        console.log(newPosts);
+        setPosts((prev) => [...prev, ...newPosts]); // Append new posts
+        console.log("Apend posts: begin");
+        setTimeout(() => setOffset((prev) => prev + 10), 1000); // Delay offset update
+        console.log("Apend posts: End");
       }
     } catch (error) {
-      console.error("Failed to load posts", error);
+      console.error("Error loading more posts:", error);
+    } finally {
+      console.log("finallt Timeout: begin");
+      setTimeout(() => setLoading(false), 1000); // Delay loading state reset
+      console.log("finallt Timeout: end");
     }
-    setLoading(false);
   };
 
-  // Initial fetch
+  // Observer to trigger fetch when scrolling near bottom
   useEffect(() => {
-    loadPosts();
-  }, []);
+    if (!hasMore) return; // Stop observing when there are no more posts
 
-  // Infinite scroll event listener
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 100 &&
-        !loading
-      ) {
-        loadPosts();
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && !loading) {
+        console.log("Observer Timeout:");
+        setTimeout(() => fetchPosts(), 1000); // Add delay before fetching
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading]);
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver(observerCallback, {
+      root: null,
+      rootMargin: "100px",
+      threshold: 1.0,
+    });
+
+    const sentinel = document.getElementById("scroll-sentinel");
+    if (sentinel) observer.current.observe(sentinel);
+
+    return () => observer.current?.disconnect();
+  }, [posts, offset, hasMore]); // Depend on `hasMore` to prevent infinite fetches
 
   return (
-    <>
+    <div>
       <Sidebar></Sidebar>
-      <div>
-        {posts.map((post) => (
-          <div key={post.id} className="p-4 border-b">
-            <h2 className="text-xl font-bold">{post.titulo}</h2>
-            <p className="text-sm text-gray-500">Category: {post.categoria}</p>
-            <p className="text-sm text-gray-500">Posted by: {post.usuario}</p>
-            <p className="mt-2">{post.conteudo}</p>
-          </div>
-        ))}
-        {loading && <p>Loading...</p>}
-        {!hasMore && <p>No more posts.</p>}
-      </div>
-    </>
+      {posts.map((post, index) => {
+        console.log("Rendering post:");
+        return <div key={post.id}>{<PostData post={post} />}</div>;
+      })}
+      <div id="scroll-sentinel" style={{ height: "1px" }}></div>
+      {loading && <p>Loading...</p>}
+    </div>
   );
-}
+};
+
+export default Doomscroller;

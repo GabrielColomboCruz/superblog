@@ -1,25 +1,33 @@
-// app/api/posts/route.ts (or in `pages/api/posts.ts` for Next.js 12)
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse } from "next/server";
 import PostsCRUD from "@/model/PostCRUD";
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "GET") {
-    const { limit = "10", offset = "0" } = req.query;
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const limit = searchParams.get("limit") || "10";
+    const offset = searchParams.get("offset") || "0";
 
-    try {
-      const posts = await PostsCRUD("list", {
-        Limit: Number(limit),
-        Offset: Number(offset),
-      });
+    const posts = await PostsCRUD("list", {
+      Limit: String(limit),
+      Offset: String(offset),
+    });
+    console.log(posts);
 
-      console.log(posts); // Optional for debugging
-      res.status(200).json(posts); // Respond with posts
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  } else {
-    // If method is not GET, return method not allowed
-    res.status(405).json({ error: "Method not allowed" });
+    return NextResponse.json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    return NextResponse.json({ data });
+  } catch (error) {
+    return NextResponse.error();
   }
 }
