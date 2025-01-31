@@ -5,7 +5,7 @@ envConfig();
 
 // Tipagem para parâmetros
 interface UsuarioParams {
-  Id?: number;
+  Id?: string;
   Titulo?: string;
   Conteudo?: string;
   Usuario?: number;

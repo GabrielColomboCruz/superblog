@@ -5,7 +5,10 @@ import Sidebar from "./_components/SideMenu";
 export default function Home() {
   return (
     <>
-      <Sidebar userName="Cookie"></Sidebar>
+      <Sidebar></Sidebar>
+      <div className="flex justify-center">
+        <img src="/MainMenuImage.png" alt="" />
+      </div>
     </>
   );
 }

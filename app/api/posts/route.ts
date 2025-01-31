@@ -6,6 +6,15 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const limit = searchParams.get("limit") || "10";
     const offset = searchParams.get("offset") || "0";
+    const Id = searchParams.get("Id") || null;
+    if (Id) {
+      const posts = await PostsCRUD("idread", {
+        Id: String(Id),
+      });
+      console.log(posts);
+
+      return NextResponse.json(posts);
+    }
 
     const posts = await PostsCRUD("list", {
       Limit: String(limit),
@@ -25,9 +34,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    return NextResponse.json({ data });
+    const { searchParams } = new URL(request.url);
+    const Id = searchParams.get("Id");
+    const posts = await PostsCRUD("idread", {
+      Id: String(Id),
+    });
+    console.log(posts);
+
+    return NextResponse.json(posts);
   } catch (error) {
-    return NextResponse.error();
+    console.error("Error fetching posts:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

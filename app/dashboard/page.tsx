@@ -1,9 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import Post from "@/app/_components/Post";
 import PostData from "../_components/PostData";
 import Sidebar from "../_components/SideMenu";
+import { useRouter } from "next/navigation";
+
 const Doomscroller = () => {
+  const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -17,7 +19,7 @@ const Doomscroller = () => {
     setLoading(true);
     console.log("Fetching posts at offset:", offset);
     console.log("Fetching posts: Begin");
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay fetchPosts
+    await new Promise((resolve) => setTimeout(resolve, 1)); // Delay fetchPosts
     console.log("Fetching posts: End");
     try {
       const res = await fetch(`/api/posts?limit=10&offset=${offset}`);
@@ -31,14 +33,14 @@ const Doomscroller = () => {
         console.log(newPosts);
         setPosts((prev) => [...prev, ...newPosts]); // Append new posts
         console.log("Apend posts: begin");
-        setTimeout(() => setOffset((prev) => prev + 10), 1000); // Delay offset update
+        setTimeout(() => setOffset((prev) => prev + 10), 1); // Delay offset update
         console.log("Apend posts: End");
       }
     } catch (error) {
       console.error("Error loading more posts:", error);
     } finally {
       console.log("finallt Timeout: begin");
-      setTimeout(() => setLoading(false), 1000); // Delay loading state reset
+      setTimeout(() => setLoading(false), 1); // Delay loading state reset
       console.log("finallt Timeout: end");
     }
   };
@@ -50,7 +52,7 @@ const Doomscroller = () => {
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting && !loading) {
         console.log("Observer Timeout:");
-        setTimeout(() => fetchPosts(), 1000); // Add delay before fetching
+        setTimeout(() => fetchPosts(), 1); // Add delay before fetching
       }
     };
 
@@ -71,10 +73,15 @@ const Doomscroller = () => {
   return (
     <div>
       <Sidebar></Sidebar>
-      {posts.map((post, index) => {
-        console.log("Rendering post:");
-        return <div key={post.id}>{<PostData post={post} />}</div>;
-      })}
+
+      {posts.map((post) => (
+        <div
+          key={post.id}
+          onClick={() => router.push(`/specificPost/${post.id}`)}
+        >
+          <PostData post={post} />
+        </div>
+      ))}
       <div id="scroll-sentinel" style={{ height: "1px" }}></div>
       {loading && <p>Loading...</p>}
     </div>

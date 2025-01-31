@@ -7,6 +7,8 @@ import {
   postsList,
   postsUsuarioRead,
 } from "@/actions/post";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface PostProps {
   userId?: string;
@@ -24,6 +26,7 @@ interface Post {
 
 export default function Post({ userId, postId, categoryId }: PostProps) {
   const [posts, setPosts] = useState<Post[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -57,14 +60,20 @@ export default function Post({ userId, postId, categoryId }: PostProps) {
           <div className="max-w-[50ch] p-4 text-center">
             {posts.length > 0 ? (
               posts.map((post) => (
-                <div key={post.id} className="border p-4 mb-4 shadow-md">
-                  <h2 className="text-xl font-bold">{post.titulo}</h2>
-                  <p className="text-gray-300">Category: {post.categoria}</p>
-                  <p className="text-gray-400">{post.conteudo}</p>
-                  <p className="text-sm text-gray-500">
-                    Posted by: {post.usuario}
-                  </p>
-                </div>
+                <a>
+                  <div
+                    key={post.id}
+                    onClick={() => router.push(`/specificPost/${post.id}`)}
+                    className="border p-4 mb-4 shadow-md"
+                  >
+                    <h2 className="text-xl font-bold">{post.titulo}</h2>
+                    <p className="text-gray-300">Category: {post.categoria}</p>
+                    <p className="text-gray-400">{post.conteudo}</p>
+                    <p className="text-sm text-gray-500">
+                      Posted by: {post.usuario}
+                    </p>
+                  </div>
+                </a>
               ))
             ) : (
               <p>No posts available.</p>
