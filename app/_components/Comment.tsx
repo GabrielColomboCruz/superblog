@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import React from "react";
 
 interface Comment {
@@ -7,17 +6,18 @@ interface Comment {
   conteudo: string;
   usuario: string;
 }
+
 interface CommentProps {
   comment: Comment;
 }
 
 export default function Comment({ comment }: CommentProps) {
   return (
-    <div className="flex justify-center">
-      <div className="max-w-[50ch] p-4 text-center">
-        <div className="border p-4 mb-4 shadow-md">
-          <h2 className="text-xl font-bold">{comment.conteudo}</h2>
-          <p className="text-sm text-gray-500">Posted by: {comment.usuario}</p>
+    <div className="w-full max-w-screen-sm mx-auto px-4">
+      <div className="bg-super-50 border border-super-200 rounded-md shadow-sm p-4 mb-4">
+        <p className="text-base text-super-800">{comment.conteudo}</p>
+        <div className="mt-2 text-right text-super-500 text-sm">
+          Posted by: {comment.usuario}
         </div>
       </div>
     </div>

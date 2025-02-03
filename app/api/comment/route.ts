@@ -7,25 +7,15 @@ export async function GET(request: Request) {
     const Conteudo = searchParams.get("Conteudo") || null;
     const Usuario = searchParams.get("Usuario") || null;
     const Post = searchParams.get("Post") || null;
-    console.log(searchParams);
     if (Conteudo) {
-      try {
-        const result = await ComentariosCRUD("create", {
-          Conteudo,
-          Usuario,
-          Post,
-        });
-        return NextResponse.json({
-          status: 200,
-          result,
-        });
-      } catch (error) {
-        console.error("Error creating comment:", error);
-        return NextResponse.json(
-          { error: "Internal Server Error" },
-          { status: 500 }
-        );
-      }
+      console.log(
+        "GET create deprecated\n Conteudo : ",
+        Conteudo,
+        "\n Usuario : ",
+        Usuario,
+        "\nPost : ",
+        Post
+      );
     }
     if (Post) {
       try {
@@ -64,8 +54,25 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    return NextResponse.json({ data });
+
+    const Conteudo = data.Conteudo || null;
+    const Usuario = data.Usuario || null;
+    const Post = data.Post || null;
+
+    const result = await ComentariosCRUD("create", {
+      Conteudo,
+      Usuario,
+      Post,
+    });
+    return NextResponse.json({
+      status: 200,
+      result,
+    });
   } catch (error) {
-    return NextResponse.error();
+    console.error("Error creating comment:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import PostData from "../_components/PostData";
+import Post from "../_components/Post";
 import Sidebar from "../_components/SideMenu";
 import { useRouter } from "next/navigation";
 
@@ -71,20 +71,21 @@ const Doomscroller = () => {
   }, [posts, offset, hasMore]); // Depend on `hasMore` to prevent infinite fetches
 
   return (
-    <div>
+    <>
       <Sidebar></Sidebar>
 
       {posts.map((post) => (
         <div
           key={post.id}
           onClick={() => router.push(`/specificPost/${post.id}`)}
+          className=""
         >
-          <PostData post={post} />
+          <Post post={post} />
         </div>
       ))}
       <div id="scroll-sentinel" style={{ height: "1px" }}></div>
       {loading && <p>Loading...</p>}
-    </div>
+    </>
   );
 };
 

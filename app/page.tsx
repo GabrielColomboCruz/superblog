@@ -6,9 +6,6 @@ export default function Home() {
   return (
     <>
       <Sidebar></Sidebar>
-      <div className="flex justify-center">
-        <img src="/MainMenuImage.png" alt="" />
-      </div>
     </>
   );
 }
