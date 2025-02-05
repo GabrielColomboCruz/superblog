@@ -9,7 +9,7 @@ interface UsuarioParams {
   Titulo?: string;
   Conteudo?: string;
   Usuario?: number;
-  Categoria?: number;
+  Categoria?: string;
   Limit?: string;
   Offset?: string;
 }

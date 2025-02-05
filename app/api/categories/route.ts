@@ -1,33 +1,18 @@
 import { NextResponse } from "next/server";
-import PostsCRUD from "@/model/PostCRUD";
+import CategoriaCRUD from "@/model/CategoriaCRUD";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") || "10";
-    const offset = searchParams.get("offset") || "0";
     const Id = searchParams.get("Id") || null;
-    const Category = searchParams.get("category") || null;
     if (Id) {
-      const result = await PostsCRUD("idread", {
+      const result = await CategoriaCRUD("idread", {
         Id: String(Id),
       });
-
-      return NextResponse.json(result);
-    }
-    if (Category) {
-      const result = await PostsCRUD("categoriaread", {
-        Categoria: String(Category),
-      });
-
       return NextResponse.json(result);
     }
 
-    const result = await PostsCRUD("list", {
-      Limit: String(limit),
-      Offset: String(offset),
-    });
-    console.log(result);
+    const result = await CategoriaCRUD("list");
 
     return NextResponse.json(result);
   } catch (error) {
@@ -42,20 +27,15 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-
     const action = data.action || null;
     const Id = data.Id || null;
-    const Conteudo = data.Conteudo || null;
-    const Usuario = data.Usuario || null;
-    const Categoria = data.Categoria || null;
-    const Titulo = data.Titulo || null;
+    const Nome = data.Nome || null;
+    const Descricao = data.Descricao || null;
     if (action) {
-      const result = await PostsCRUD(action, {
+      const result = await CategoriaCRUD(action, {
         Id,
-        Titulo,
-        Conteudo,
-        Usuario,
-        Categoria,
+        Nome,
+        Descricao,
       });
       return NextResponse.json({
         status: 200,

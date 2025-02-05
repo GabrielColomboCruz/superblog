@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 const Sidebar = () => {
   const [session, setSession] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -15,31 +16,43 @@ const Sidebar = () => {
     fetchSession();
   }, []);
 
+  useEffect(() => {
+    // Set sidebar open on desktop, closed on mobile
+    const handleResize = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setIsOpen(!mobile);
+    };
+    handleResize(); // Run on mount
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (!session) return <p>Loading...</p>;
 
   return (
     <>
-      {/* Burger Button */}
-      <button
-        className="fixed top-4 left-4 z-50 p-2 bg-super-500 rounded-full text-white shadow-lg md:hidden"
-        onClick={() => setIsOpen(true)}
-      >
-        ☰
-      </button>
+      {/* Burger Button (Always Visible) */}
+      {!isOpen && (
+        <button
+          className="fixed top-4 left-4 z-50 p-2 bg-super-500 rounded-full text-white shadow-lg"
+          onClick={() => setIsOpen(true)}
+        >
+          ☰
+        </button>
+      )}
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container (Above Everything) */}
       <div
-        className={`fixed inset-y-0 left-0 h-screen z-40 w-64 bg-white shadow-lg transform transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white md:bg-opacity-100 bg-super-50 text-white shadow-lg transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 md:relative md:w-64 flex flex-col h-full`}
+        } flex flex-col h-full`}
       >
         <div className="p-4 flex items-center justify-between">
           <h1 className="text-3xl font-extrabold font-serif">
             <Link href="/">SuperBlog</Link>
           </h1>
-          <button className="md:hidden" onClick={() => setIsOpen(false)}>
-            ✖
-          </button>
+          {<button onClick={() => setIsOpen(false)}>✖</button>}
         </div>
 
         {/* Navigation */}
@@ -95,12 +108,9 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Overlay for Mobile */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
-        ></div>
+      {/* Overlay for Mobile (Solid Background) */}
+      {isMobile && isOpen && (
+        <div className="fixed inset-0  bg-opacity-100 z-40"></div>
       )}
     </>
   );
