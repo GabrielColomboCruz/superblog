@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Post from "../_components/Post";
 import Sidebar from "../_components/SideMenu";
 import { useRouter } from "next/navigation";
@@ -13,14 +13,15 @@ const Doomscroller = () => {
   const observer = useRef<IntersectionObserver | null>(null);
 
   // Fetch posts from API
-  const fetchPosts = async () => {
-    if (loading || !hasMore) return; // Prevent unnecessary fetches
+  const fetchPosts = useCallback(async () => {
+    if (loading || !hasMore) return;
 
     setLoading(true);
     console.log("Fetching posts at offset:", offset);
     console.log("Fetching posts: Begin");
-    await new Promise((resolve) => setTimeout(resolve, 1)); // Delay fetchPosts
+    await new Promise((resolve) => setTimeout(resolve, 1));
     console.log("Fetching posts: End");
+
     try {
       const res = await fetch(`/api/posts?limit=10&offset=${offset}`);
       if (!res.ok) throw new Error("Failed to fetch posts");
@@ -28,31 +29,25 @@ const Doomscroller = () => {
       const newPosts = await res.json();
 
       if (newPosts.length === 0) {
-        setHasMore(false); // No more posts to load
+        setHasMore(false);
       } else {
         console.log(newPosts);
-        setPosts((prev) => [...prev, ...newPosts]); // Append new posts
-        console.log("Apend posts: begin");
-        setTimeout(() => setOffset((prev) => prev + 10), 1); // Delay offset update
-        console.log("Apend posts: End");
+        setPosts((prev) => [...prev, ...newPosts]);
+        setTimeout(() => setOffset((prev) => prev + 10), 1);
       }
     } catch (error) {
       console.error("Error loading more posts:", error);
     } finally {
-      console.log("finallt Timeout: begin");
-      setTimeout(() => setLoading(false), 1); // Delay loading state reset
-      console.log("finallt Timeout: end");
+      setTimeout(() => setLoading(false), 1);
     }
-  };
+  }, [loading, hasMore, offset]);
 
-  // Observer to trigger fetch when scrolling near bottom
   useEffect(() => {
-    if (!hasMore) return; // Stop observing when there are no more posts
+    if (!hasMore) return;
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       if (entries[0].isIntersecting && !loading) {
-        console.log("Observer Timeout:");
-        setTimeout(() => fetchPosts(), 1); // Add delay before fetching
+        setTimeout(() => fetchPosts(), 1);
       }
     };
 
@@ -68,7 +63,7 @@ const Doomscroller = () => {
     if (sentinel) observer.current.observe(sentinel);
 
     return () => observer.current?.disconnect();
-  }, [posts, offset, hasMore]); // Depend on `hasMore` to prevent infinite fetches
+  }, [fetchPosts, loading, hasMore, offset]); // Depend on `hasMore` to prevent infinite fetches
 
   return (
     <>

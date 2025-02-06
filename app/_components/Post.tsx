@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useSession, getSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 interface PostProps {
   post: {
@@ -15,7 +15,7 @@ interface PostProps {
 
 const Post: React.FC<PostProps> = ({ post }) => {
   const router = useRouter();
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<NonNullable<typeof session>>(null);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -32,7 +32,7 @@ const Post: React.FC<PostProps> = ({ post }) => {
     };
 
     fetchSession();
-  }, []);
+  }, [post.usuario, session]);
 
   const isOwner = session?.user?.name === post.usuario;
   const handleDelete = async (id: number) => {

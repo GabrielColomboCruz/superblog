@@ -2,6 +2,7 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import UsuarioCRUD from "@/model/UsuarioCRUD";
 import Github from "next-auth/providers/github";
+import bcrypt from "bcrypt";
 
 export const options: NextAuthOptions = {
   providers: [
@@ -34,9 +35,8 @@ export const options: NextAuthOptions = {
           // Valida se o usuário existe e se a senha está correta
           if (result && Array.isArray(result) && result.length > 0) {
             const user = result[0]; // Aqui você pode acessar o primeiro item do array
-            const bcrypt = require("bcrypt");
-            //const isPasswordValid = await bcrypt.compare(              credentials.password,              user.Senha            );
-            if (password == user.senha) {
+            const isPasswordValid = await bcrypt.compare(password, user.Senha);
+            if (isPasswordValid) {
               console.log(user);
               return {
                 id: user.id, // Ensure lowercase 'id' (not 'Id')
