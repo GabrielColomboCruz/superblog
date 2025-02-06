@@ -1,7 +1,9 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 interface PostProps {
   post: {
@@ -15,7 +17,7 @@ interface PostProps {
 
 const Post: React.FC<PostProps> = ({ post }) => {
   const router = useRouter();
-  const [session, setSession] = useState<NonNullable<typeof session>>(null);
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -23,18 +25,19 @@ const Post: React.FC<PostProps> = ({ post }) => {
       setSession(newSession);
       console.log(
         "session : ",
-        session,
+        newSession,
         "\nsessionUserId : ",
-        session?.user?.id,
+        newSession?.user?.id,
         "\nPostUserId : ",
         post.usuario
       );
     };
 
     fetchSession();
-  }, [post.usuario, session]);
+  }, []); // Only run once when the component mounts
 
   const isOwner = session?.user?.name === post.usuario;
+
   const handleDelete = async (id: number) => {
     if (!confirm("Are you sure you want to delete this post?")) return;
 
@@ -47,8 +50,8 @@ const Post: React.FC<PostProps> = ({ post }) => {
   };
 
   return (
-    <div className=" w-full max-w-screen-sm mx-auto px-4 mt-4">
-      <div className="w-full max-w-screen-md mx-auto bg-super-50 border border-super-200 rounded-lg shadow-md p-4 mb-6  min-h-[200px] max-h-[400px] overflow-hidden">
+    <div className="w-full max-w-screen-sm mx-auto px-4 mt-4">
+      <div className="w-full max-w-screen-md mx-auto bg-super-50 border border-super-200 rounded-lg shadow-md p-4 mb-6 min-h-[200px] max-h-[400px] overflow-hidden">
         <h2 className="text-xl sm:text-2xl font-bold text-super-900 mb-2">
           {post.titulo}
         </h2>

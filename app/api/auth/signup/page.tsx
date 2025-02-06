@@ -17,7 +17,7 @@ export default function RegisterForm() {
     const password = formData.get("password");
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("/api/users", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
