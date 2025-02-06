@@ -36,7 +36,7 @@ export const options: NextAuthOptions = {
             const user = result[0]; // Aqui você pode acessar o primeiro item do array
             const bcrypt = require("bcrypt");
             //const isPasswordValid = await bcrypt.compare(              credentials.password,              user.Senha            );
-            if (credentials.password == user.senha) {
+            if (password == user.senha) {
               console.log(user);
               return {
                 id: user.id, // Ensure lowercase 'id' (not 'Id')

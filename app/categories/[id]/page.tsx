@@ -6,37 +6,36 @@ import SideMenu from "@/app/_components/SideMenu";
 import Post from "@/app/_components/Post";
 
 import { useRouter } from "next/navigation";
-interface PostProps {
-  post: {
-    id: number;
-    titulo: string;
-    conteudo: string;
-    categoria: string;
-    usuario: string;
-  };
+interface Post {
+  id: number;
+  titulo: string;
+  conteudo: string;
+  categoria: string;
+  usuario: string;
 }
 
 export default function CategoryDetailPage() {
   const router = useRouter();
   const { id } = useParams();
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    if (!id) return;
+
+    (async () => {
       try {
         const response = await fetch(`/api/posts?category=${id}`);
         if (!response.ok) throw new Error("Failed to fetch posts");
-        const result = await response.json();
+        const result: Post[] = await response.json();
         setPosts(result);
       } catch (error) {
         console.error("Failed to fetch posts", error);
       } finally {
         setLoading(false);
       }
-    };
-
-    if (id) fetchPosts();
+    })();
   }, [id]);
 
   return (
@@ -54,7 +53,6 @@ export default function CategoryDetailPage() {
               <div
                 key={post.id}
                 onClick={() => router.push(`/specificPost/${post.id}`)}
-                className=""
               >
                 <Post post={post} />
               </div>

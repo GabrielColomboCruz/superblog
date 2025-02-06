@@ -6,10 +6,25 @@ import Comment from "@/app/_components/Comment";
 import Commenter from "@/app/_components/Commenter";
 import Sidebar from "@/app/_components/SideMenu";
 
+interface CommentType {
+  id: number;
+  conteudo: string;
+  categoria: string;
+  usuario: string;
+}
+
+interface Post {
+  id: number;
+  titulo: string;
+  conteudo: string;
+  categoria: string;
+  usuario: string;
+}
+
 const PostPage = () => {
   const { id } = useParams(); // Get post ID from the URL
-  const [post, setPost] = useState<any>(null);
-  const [comments, setComments] = useState<any[]>([]);
+  const [post, setPost] = useState<Post>(null);
+  const [comments, setComments] = useState<CommentType[]>([]);
 
   // Fetch post data
   useEffect(() => {

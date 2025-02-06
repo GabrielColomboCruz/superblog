@@ -41,7 +41,7 @@ const Commenter: React.FC<CommenterProps> = ({ postId, onCommentPosted }) => {
       if (onCommentPosted) {
         onCommentPosted();
       }
-    } catch (error: any) {
+    } catch (error) {
       setError(error.message || "Something went wrong");
     } finally {
       setLoading(false);

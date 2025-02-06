@@ -15,7 +15,7 @@ export default function RegisterForm() {
     try {
       await register(formData);
       // Redirect or show success message
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message);
     }
   };
