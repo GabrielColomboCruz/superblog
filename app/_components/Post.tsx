@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import { Session } from "next-auth";
@@ -17,7 +17,7 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = ({ post }) => {
-  const router = useRouter();
+  //const router = useRouter();
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {

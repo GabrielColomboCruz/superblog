@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import CategoriaCRUD from "@/model/CategoriaCRUD";
-import { useSession } from "next-auth/react";
 
 export async function GET(request: Request) {
   try {
@@ -34,18 +33,6 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     // console.log("📝 Recebendo requisição POST para modificar categoria...");
-
-    // 🔒 Verificar sessão do usuário
-    const session = await useSession();
-    if (!session || session.data.user.id !== "1") {
-      console.warn(
-        "⚠️ Acesso negado! Apenas administradores podem modificar categorias."
-      );
-      return NextResponse.json(
-        { error: "Apenas administradores podem modificar categorias" },
-        { status: 403 }
-      );
-    }
 
     const data = await request.json();
     const action = data.action || null;

@@ -10,10 +10,10 @@ export async function GET(request: Request) {
     const Usuario = searchParams.get("Usuario") || null;
     const Post = searchParams.get("Post") || null;
 
-    //console.log(
-    //  "📌 Parâmetros recebidos ->",
-    //  `Conteudo: ${Conteudo}, Usuario: ${Usuario}, Post: ${Post}`
-    //);
+    console.log(
+      "📌 Parâmetros recebidos ->",
+      `Conteudo: ${Conteudo}, Usuario: ${Usuario}, Post: ${Post}`
+    );
 
     if (Conteudo) {
       console.warn(
