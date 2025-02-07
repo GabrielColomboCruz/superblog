@@ -4,18 +4,18 @@ import envConfig from "@/config/envConfig";
 envConfig();
 
 // Tipagem para parâmetros
-interface UsuarioParams {
+interface PostParams {
   Id?: string;
   Titulo?: string;
   Conteudo?: string;
-  Usuario?: number;
+  Usuario?: string;
   Categoria?: string;
   Limit?: string;
   Offset?: string;
 }
 
 // Tipagem para resultados do CRUD
-type UsuarioCRUDResult = RowDataPacket[] | OkPacket;
+type PostCRUDResult = RowDataPacket[] | OkPacket;
 
 // Configuração do pool
 const pool: Pool = createPool({
@@ -37,46 +37,52 @@ async function PostsCRUD(
     | "update"
     | "delete"
     | "list",
-  params: UsuarioParams = {}
-): Promise<UsuarioCRUDResult> {
+  params: PostParams = {}
+): Promise<PostCRUDResult> {
   try {
     const sqlMap: Record<string, string> = {
       list: `SELECT posts.id, posts.titulo, posts.conteudo, 
-             categorias.nome AS categoria, usuarios.nome AS usuario 
-      FROM posts
-      JOIN categorias ON posts.categoria_id = categorias.id
-      JOIN usuarios ON posts.usuario_id = usuarios.id
-      ORDER BY posts.id DESC
-      LIMIT ? OFFSET ?;`,
+                  categorias.nome AS categoria, usuarios.id AS usuario_id, usuarios.nome AS usuario 
+           FROM posts
+           JOIN categorias ON posts.categoria_id = categorias.id
+           JOIN usuarios ON posts.usuario_id = usuarios.id
+           ORDER BY posts.id DESC
+           LIMIT ? OFFSET ?;`,
 
       categoriaread: `SELECT posts.id, posts.titulo, posts.conteudo, 
-                             categorias.nome AS categoria, usuarios.nome AS usuario 
-                      FROM posts
-                      JOIN categorias ON posts.categoria_id = categorias.id
-                      JOIN usuarios ON posts.usuario_id = usuarios.id
-                      WHERE posts.categoria_id = ?;`,
+                       categorias.nome AS categoria, usuarios.id AS usuario_id, usuarios.nome AS usuario 
+                FROM posts
+                JOIN categorias ON posts.categoria_id = categorias.id
+                JOIN usuarios ON posts.usuario_id = usuarios.id
+                WHERE posts.categoria_id = ?;`,
+
       usuarioread: `SELECT posts.id, posts.titulo, posts.conteudo, 
-                           categorias.nome AS categoria, usuarios.nome AS usuario 
-                    FROM posts
-                    JOIN categorias ON posts.categoria_id = categorias.id
-                    JOIN usuarios ON posts.usuario_id = usuarios.id
-                    WHERE posts.usuario_id = ?;`,
-      create:
-        "INSERT INTO `posts` (`titulo`, `conteudo`,`usuario_id`,`categoria_id` ) VALUES (?, ?, ?, ?);",
+                     categorias.nome AS categoria, usuarios.id AS usuario_id, usuarios.nome AS usuario 
+              FROM posts
+              JOIN categorias ON posts.categoria_id = categorias.id
+              JOIN usuarios ON posts.usuario_id = usuarios.id
+              WHERE posts.usuario_id = ?;`,
+
+      create: `INSERT INTO posts (titulo, conteudo, usuario_id, categoria_id) 
+         VALUES (?, ?, ?, ?);`,
+
       idread: `SELECT posts.id, posts.titulo, posts.conteudo, 
-                      categorias.nome AS categoria, usuarios.nome AS usuario 
-               FROM posts
-               JOIN categorias ON posts.categoria_id = categorias.id
-               JOIN usuarios ON posts.usuario_id = usuarios.id
-               WHERE posts.id = ?;`,
+                categorias.nome AS categoria, usuarios.id AS usuario_id, usuarios.nome AS usuario 
+         FROM posts
+         JOIN categorias ON posts.categoria_id = categorias.id
+         JOIN usuarios ON posts.usuario_id = usuarios.id
+         WHERE posts.id = ?;`,
+
       read: `SELECT posts.id, posts.titulo, posts.conteudo, 
-                    categorias.nome AS categoria, usuarios.nome AS usuario 
-             FROM posts
-             JOIN categorias ON posts.categoria_id = categorias.id
-             JOIN usuarios ON posts.usuario_id = usuarios.id
-             WHERE posts.titulo LIKE CONCAT('%', ?, '%');`,
-      update: "UPDATE `posts` SET `titulo` = ?, `conteudo` = ? WHERE `id` = ?;",
-      delete: "DELETE FROM `posts` WHERE `id` = ?;",
+              categorias.nome AS categoria, usuarios.id AS usuario_id, usuarios.nome AS usuario 
+       FROM posts
+       JOIN categorias ON posts.categoria_id = categorias.id
+       JOIN usuarios ON posts.usuario_id = usuarios.id
+       WHERE posts.titulo LIKE CONCAT('%', ?, '%');`,
+
+      update: `UPDATE posts SET titulo = ?, conteudo = ? WHERE id = ?;`,
+
+      delete: `DELETE FROM posts WHERE id = ?;`,
     };
 
     if (!sqlMap[operation]) throw new Error("Operação inválida.");
@@ -127,7 +133,7 @@ async function PostsCRUD(
         break;
     }
 
-    const [result] = await pool.execute<UsuarioCRUDResult>(sql, values);
+    const [result] = await pool.execute<PostCRUDResult>(sql, values);
 
     console.log(`Operação ${operation} executada com sucesso.`);
     return result;

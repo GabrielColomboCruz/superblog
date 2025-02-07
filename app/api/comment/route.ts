@@ -3,49 +3,49 @@ import ComentariosCRUD from "@/model/ComentarioCRUD";
 
 export async function GET(request: Request) {
   try {
+    //console.log("📩 Recebendo requisição GET para comentários...");
+
     const { searchParams } = new URL(request.url);
     const Conteudo = searchParams.get("Conteudo") || null;
     const Usuario = searchParams.get("Usuario") || null;
     const Post = searchParams.get("Post") || null;
+
+    //console.log(
+    //  "📌 Parâmetros recebidos ->",
+    //  `Conteudo: ${Conteudo}, Usuario: ${Usuario}, Post: ${Post}`
+    //);
+
     if (Conteudo) {
-      console.log(
-        "GET create deprecated\n Conteudo : ",
-        Conteudo,
-        "\n Usuario : ",
-        Usuario,
-        "\nPost : ",
-        Post
+      console.warn(
+        "⚠️ GET create está obsoleto. Verifique se deveria estar aqui."
       );
     }
+
     if (Post) {
+      // console.log(`🔍 Buscando comentários para o post ID: ${Post}`);
       try {
-        //!! Perigoso
-        //!! Quaquer um com a rota correta pode criar um comentario desde que saiba o id do seu Usuario
-        //!! O mesmo se aplica a criação de posts
-        //!! Quando possivel fazer com que criação de items requeira confirmação da session de quem ta logado
-        const result = await ComentariosCRUD("postread", {
-          Post,
-        });
-        return NextResponse.json({
-          result,
-          status: 200,
-        });
+        const result = await ComentariosCRUD("postread", { Post });
+
+        // console.log("✅ Comentários encontrados:", result);
+        return NextResponse.json({ status: 200, result });
       } catch (error) {
-        console.error("Error fetching comment by post:", error);
+        console.error("❌ Erro ao buscar comentários por Post:", error);
         return NextResponse.json(
-          { error: "Internal Server Error" },
+          { error: "Erro ao buscar comentários" },
           { status: 500 }
         );
       }
     }
-    console.log(Post);
-    const posts = await ComentariosCRUD("list");
-    //console.log(posts);
-    return NextResponse.json({ posts, status: 200 });
+
+    //console.log("📂 Buscando todos os comentários...");
+    const result = await ComentariosCRUD("list");
+
+    //console.log("✅ Lista de comentários retornada:", result);
+    return NextResponse.json({ status: 200, posts: result });
   } catch (error) {
-    console.error("Error fetching comment:", error);
+    console.error("❌ Erro ao buscar comentários:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Erro ao buscar comentários" },
       { status: 500 }
     );
   }
@@ -53,25 +53,50 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    //console.log("📝 Recebendo requisição POST para criar comentário...");
 
+    const data = await request.json();
     const Conteudo = data.Conteudo || null;
     const Usuario = data.Usuario || null;
     const Post = data.Post || null;
 
+    //console.log(
+    //  "📌 Dados recebidos ->",
+    //  `Conteudo: ${Conteudo}, Usuario: ${Usuario}, Post: ${Post}`
+    //);
+
+    // 🚨 Segurança: Deve validar o usuário logado antes de criar comentários
+    if (!Usuario) {
+      console.warn("⚠️ Tentativa de criação de comentário sem usuário!");
+      return NextResponse.json(
+        { error: "Usuário não autenticado" },
+        { status: 401 }
+      );
+    }
+
+    if (!Conteudo || !Post) {
+      console.warn(
+        "⚠️ Tentativa de criação de comentário com dados incompletos!"
+      );
+      return NextResponse.json(
+        { error: "Conteúdo e Post são obrigatórios" },
+        { status: 400 }
+      );
+    }
+
+    //console.log("✅ Criando comentário...");
     const result = await ComentariosCRUD("create", {
       Conteudo,
       Usuario,
       Post,
     });
-    return NextResponse.json({
-      status: 200,
-      result,
-    });
+
+    //console.log("🎉 Comentário criado com sucesso:", result);
+    return NextResponse.json({ status: 200, result });
   } catch (error) {
-    console.error("Error creating comment:", error);
+    console.error("❌ Erro ao criar comentário:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Erro ao criar comentário" },
       { status: 500 }
     );
   }

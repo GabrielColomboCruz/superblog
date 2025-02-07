@@ -12,6 +12,7 @@ interface Post {
   conteudo: string;
   categoria: string;
   usuario: string;
+  usuario_id: string;
 }
 
 export default function CategoryDetailPage() {
@@ -26,7 +27,7 @@ export default function CategoryDetailPage() {
 
     (async () => {
       try {
-        const response = await fetch(`/api/posts?category=${id}`);
+        const response = await fetch(`/api/posts?categoria=${id}`);
         if (!response.ok) throw new Error("Failed to fetch posts");
         const result: Post[] = await response.json();
         setPosts(result);

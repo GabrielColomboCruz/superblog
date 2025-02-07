@@ -9,6 +9,7 @@ interface PostData {
   conteudo: string;
   categoria: string;
   usuario: string;
+  usuario_id: string;
 }
 
 interface ProfileViewerProps {
@@ -36,7 +37,7 @@ const ProfileViewer: React.FC<ProfileViewerProps> = ({ userId }) => {
     const fetchUserPosts = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/posts?usuarioread=${userIdToFetch}`);
+        const res = await fetch(`/api/posts?usuario=${userIdToFetch}`);
         if (!res.ok) throw new Error("Failed to fetch posts");
         const data = await res.json();
         setPosts(data);

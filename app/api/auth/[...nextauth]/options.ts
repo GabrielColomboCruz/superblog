@@ -1,16 +1,17 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import UsuarioCRUD from "@/model/UsuarioCRUD";
-import Github from "next-auth/providers/github";
+
+//import Github from "next-auth/providers/github";
 
 export const options: NextAuthOptions = {
   providers: [
-    Github({
-      clientId: process.env.GITHUB_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
-    }),
+    //Github({
+    //  clientId: process.env.GITHUB_ID as string,
+    //  clientSecret: process.env.GITHUB_SECRET as string,
+    //}),
     CredentialsProvider({
-      name: "Credentials",
+      name: "Credentials", // Nome do provedor de autenticação
       credentials: {
         email: {
           label: "Email: ",
@@ -19,32 +20,53 @@ export const options: NextAuthOptions = {
         },
         password: { label: "Password: ", type: "password" },
       },
+
       async authorize(credentials) {
-        // Verifique se credentials existe
+        console.log("Tentando fazer login...");
+
+        // Verifica se as credenciais foram fornecidas
         if (!credentials) {
+          console.error("Erro: Nenhuma credencial fornecida.");
           throw new Error("Credenciais não fornecidas.");
         }
 
+        // Extrai o email e a senha do usuário
         const { email, password } = credentials;
+        console.log("Credenciais recebidas:", { email, password });
 
         try {
-          // Busca o usuário pelo email
+          // Consulta o banco de dados para buscar o usuário pelo email
+          console.log("Buscando usuário no banco de dados...");
           const result = await UsuarioCRUD("emailread", { Email: email });
 
-          // Valida se o usuário existe e se a senha está correta
+          console.log("CRUD resultado do emailread:", result);
+
+          // Verifica se o usuário foi encontrado e se os dados estão corretos
           if (result && Array.isArray(result) && result.length > 0) {
-            const user = result[0]; // Aqui você pode acessar o primeiro item do array
-            //const isPasswordValid = await bcrypt.compare(              credentials.password,              user.Senha            );
-            if (password == user.senha) {
-              console.log(user);
+            const user = result[0]; // Pegamos o primeiro usuário retornado
+
+            console.log("Usuário encontrado...");
+            console.log("Validando senha...");
+            // const isPasswordValid = await bcrypt.compare(password, user.Senha);
+            // Verificação da senha (substitua pelo bcrypt.compare se usar hash)
+            if (password === user.senha) {
+              console.log("Senha válida! Autenticando usuário...");
+
+              // Retorna os dados do usuário autenticado
               return {
-                id: user.id, // Ensure lowercase 'id' (not 'Id')
-                name: user.nome, // Ensure lowercase 'name' (not 'Nome')
-                email: user.email, // Ensure lowercase 'email' (not 'Email')
+                id: user.id, // ID do usuário (deve ser minúsculo)
+                name: user.nome, // Nome do usuário
+                email: user.email, // Email do usuário
               };
+            } else {
+              console.warn("Senha incorreta para o usuário:", email);
             }
+          } else {
+            console.warn("Usuário não encontrado:", email);
           }
-          return null; // Retorna null para credenciais inválidas
+
+          console.log("Autenticação falhou. Retornando null.");
+          return null; // Retorna null se o login falhar
         } catch (error) {
           console.error("Erro durante a autenticação:", error);
           return null;

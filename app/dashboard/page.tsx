@@ -17,10 +17,10 @@ const Doomscroller = () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
-    console.log("Fetching posts at offset:", offset);
-    console.log("Fetching posts: Begin");
+    //console.log("Fetching posts at offset:", offset);
+    //console.log("Fetching posts: Begin");
     await new Promise((resolve) => setTimeout(resolve, 1));
-    console.log("Fetching posts: End");
+    //console.log("Fetching posts: End");
 
     try {
       const res = await fetch(`/api/posts?limit=10&offset=${offset}`);
@@ -31,7 +31,7 @@ const Doomscroller = () => {
       if (newPosts.length === 0) {
         setHasMore(false);
       } else {
-        console.log(newPosts);
+        //console.log(newPosts);
         setPosts((prev) => [...prev, ...newPosts]);
         setTimeout(() => setOffset((prev) => prev + 10), 1);
       }

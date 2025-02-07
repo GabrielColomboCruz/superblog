@@ -12,6 +12,7 @@ interface PostProps {
     conteudo: string;
     categoria: string;
     usuario: string;
+    usuario_id: string;
   };
 }
 
@@ -21,31 +22,28 @@ const Post: React.FC<PostProps> = ({ post }) => {
 
   useEffect(() => {
     const fetchSession = async () => {
-      const newSession = await getSession();
-      setSession(newSession);
-      console.log(
-        "session : ",
-        newSession,
-        "\nsessionUserId : ",
-        newSession?.user?.id,
-        "\nPostUserId : ",
-        post.usuario
-      );
+      const session = await getSession();
+      setSession(session);
     };
 
     fetchSession();
   }, []); // Only run once when the component mounts
 
-  const isOwner = session?.user?.name === post.usuario;
+  const isOwner = session?.user?.id === post.usuario_id;
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this post?")) return;
+    if (!confirm("Tem certeza de que deseja excluir este post?")) return;
 
     try {
-      const response = await fetch(`/api/posts/${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete post");
+      const response = await fetch(`/api/posts?id=${id}`, { method: "DELETE" });
+      if (!response.ok) throw new Error("Falha ao excluir o post");
+
+      alert("Post excluído com sucesso!"); // Mensagem de sucesso
+      // Adicionar lógica para remover o post da interface, por exemplo:
+      // setPosts(posts.filter(post => post.id !== id));  // Remover o post da lista
     } catch (error) {
-      console.error("Error deleting post:", error);
+      console.error("Erro ao excluir o post:", error);
+      alert("Ocorreu um erro ao tentar excluir o post. Tente novamente."); // Mensagem de erro
     }
   };
 
@@ -62,10 +60,10 @@ const Post: React.FC<PostProps> = ({ post }) => {
         </div>
         {isOwner && (
           <button
-            onClick={() => router.push(`/edit/${post.id}`)}
+            //onClick={() => router.push(`/edit/${post.id}`)}
             className="text-blue-600 hover:underline mr-4"
           >
-            Edit
+            Edit (WIP)
           </button>
         )}
         {isOwner && (

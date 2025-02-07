@@ -4,69 +4,94 @@ import PostsCRUD from "@/model/PostCRUD";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = searchParams.get("limit") || "10";
-    const offset = searchParams.get("offset") || "0";
-    const Id = searchParams.get("Id") || null;
-    const Category = searchParams.get("category") || null;
-    if (Id) {
-      const result = await PostsCRUD("idread", {
-        Id: String(Id),
-      });
+    const id = searchParams.get("id");
+    const usuario = searchParams.get("usuario");
+    const categoria = searchParams.get("categoria");
+    const Limit = searchParams.get("limit");
+    const Offset = searchParams.get("offset");
 
-      return NextResponse.json(result);
+    //console.log("Recebendo GET com parâmetros:", { id, usuario, categoria });
+
+    let result;
+    if (id) {
+      result = await PostsCRUD("idread", { Id: id });
+    } else if (usuario) {
+      result = await PostsCRUD("usuarioread", { Usuario: usuario });
+    } else if (categoria) {
+      result = await PostsCRUD("categoriaread", { Categoria: categoria });
+    } else {
+      result = await PostsCRUD("list", { Limit, Offset });
     }
-    if (Category) {
-      const result = await PostsCRUD("categoriaread", {
-        Categoria: String(Category),
-      });
-
-      return NextResponse.json(result);
-    }
-
-    const result = await PostsCRUD("list", {
-      Limit: String(limit),
-      Offset: String(offset),
-    });
-    console.log(result);
 
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    console.error("Erro no GET:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Erro ao buscar posts" },
       { status: 500 }
     );
   }
 }
-
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const { Titulo, Conteudo, Usuario, Categoria } = await request.json();
+    //console.log("Criando novo post:", { Titulo, Conteudo, Usuario, Categoria });
 
-    const action = data.action || null;
-    const Id = data.Id || null;
-    const Conteudo = data.Conteudo || null;
-    const Usuario = data.Usuario || null;
-    const Categoria = data.Categoria || null;
-    const Titulo = data.Titulo || null;
-    if (action) {
-      const result = await PostsCRUD(action, {
-        Id,
-        Titulo,
-        Conteudo,
-        Usuario,
-        Categoria,
-      });
-      return NextResponse.json({
-        status: 200,
-        result,
-      });
+    if (!Titulo || !Conteudo || !Usuario || !Categoria) {
+      return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
     }
-    return NextResponse.json({ error: "Method not allowed" }, { status: 500 });
+
+    const result = await PostsCRUD("create", {
+      Titulo,
+      Conteudo,
+      Usuario,
+      Categoria,
+    });
+
+    return NextResponse.json({ status: 201, result });
   } catch (error) {
-    console.error("Error fetching posts:", error);
+    console.error("Erro no POST:", error);
+    return NextResponse.json({ error: "Erro ao criar post" }, { status: 500 });
+  }
+}
+export async function PUT(request: Request) {
+  try {
+    const { Id, Titulo, Conteudo } = await request.json();
+    //console.log("Atualizando post:", { Id, Titulo, Conteudo });
+
+    if (!Id || (!Titulo && !Conteudo)) {
+      return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
+    }
+
+    const result = await PostsCRUD("update", { Id, Titulo, Conteudo });
+
+    return NextResponse.json({ status: 200, result });
+  } catch (error) {
+    console.error("Erro no PUT:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Erro ao atualizar post" },
+      { status: 500 }
+    );
+  }
+}
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    //console.log("Tentando excluir post:", { id });
+
+    if (!id) {
+      return NextResponse.json({ error: "ID não fornecido" }, { status: 400 });
+    }
+
+    const result = await PostsCRUD("delete", { Id: id });
+
+    return NextResponse.json({ status: 200, result });
+  } catch (error) {
+    console.error("Erro no DELETE:", error);
+    return NextResponse.json(
+      { error: "Erro ao deletar post" },
       { status: 500 }
     );
   }

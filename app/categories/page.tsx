@@ -20,7 +20,6 @@ export default function CategoriesPage() {
         if (!response.ok) throw new Error("Failed to fetch categories");
         const result = await response.json();
         setCategories(result);
-        console.log("Resultado : ", result);
       } catch (error) {
         console.error("Failed to fetch categories", error);
       }

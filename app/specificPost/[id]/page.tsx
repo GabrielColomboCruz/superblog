@@ -19,6 +19,7 @@ interface Post {
   conteudo: string;
   categoria: string;
   usuario: string;
+  usuario_id: string;
 }
 
 const PostPage = () => {

@@ -21,5 +21,13 @@ export default withAuth(async function middleware(req) {
 
 export const config = {
   // The matcher should apply middleware to the routes you want to protect or customize
-  matcher: ["/", "/dashboard", "/profile", "/post", "/specificPost"], // Adjust as needed
+  matcher: [
+    "/",
+    "/dashboard",
+    "/profile",
+    "/post",
+    "/specificPost",
+    "/categories",
+    "/",
+  ], // Adjust as needed
 };
