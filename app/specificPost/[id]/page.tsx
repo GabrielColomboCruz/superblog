@@ -32,7 +32,7 @@ const PostPage = () => {
     if (!id) return;
     const fetchPost = async () => {
       try {
-        const res = await fetch(`/api/posts?Id=${id}`);
+        const res = await fetch(`/api/posts?id=${id}`);
         const data = await res.json();
         //console.log(data);
         setPost(data[0]);

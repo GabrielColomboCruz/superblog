@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import PostsCRUD from "@/model/PostCRUD";
+//import { getSession } from "next-auth/react";
 
 export async function GET(request: Request) {
   try {
+    //const session = await getSession(); // Get user session
+    //const userId = session?.user?.id || null;
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
     const usuario = searchParams.get("usuario");
@@ -56,14 +60,19 @@ export async function POST(request: Request) {
 }
 export async function PUT(request: Request) {
   try {
-    const { Id, Titulo, Conteudo } = await request.json();
-    //console.log("Atualizando post:", { Id, Titulo, Conteudo });
+    const { Id, Titulo, Conteudo, Categoria } = await request.json();
+    console.log("Atualizando post:", { Id, Titulo });
 
-    if (!Id || (!Titulo && !Conteudo)) {
+    if (!Id || (!Titulo && !Conteudo && !Categoria)) {
       return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
     }
 
-    const result = await PostsCRUD("update", { Id, Titulo, Conteudo });
+    const result = await PostsCRUD("update", {
+      Id,
+      Titulo,
+      Conteudo,
+      Categoria,
+    });
 
     return NextResponse.json({ status: 200, result });
   } catch (error) {

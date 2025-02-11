@@ -80,7 +80,7 @@ async function PostsCRUD(
        JOIN usuarios ON posts.usuario_id = usuarios.id
        WHERE posts.titulo LIKE CONCAT('%', ?, '%');`,
 
-      update: `UPDATE posts SET titulo = ?, conteudo = ? WHERE id = ?;`,
+      update: `UPDATE posts SET titulo = ?, conteudo = ?, categoria_id = ? WHERE id = ?;`,
 
       delete: `DELETE FROM posts WHERE id = ?;`,
     };
@@ -119,6 +119,7 @@ async function PostsCRUD(
         values = [
           sanitizeValue(params.Titulo),
           sanitizeValue(params.Conteudo),
+          sanitizeValue(params.Categoria),
           sanitizeValue(params.Id),
         ];
         break;
