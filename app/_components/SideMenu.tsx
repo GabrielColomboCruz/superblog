@@ -2,6 +2,7 @@
 import { getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import SearchBar from "./SearchBar";
 
 const Sidebar = () => {
   const [session, setSession] = useState(null);
@@ -57,6 +58,8 @@ const Sidebar = () => {
 
         {/* Navigation */}
         <nav className="flex-1 p-4">
+          <SearchBar onSearch={(query) => console.log("Search for:", query)} />
+
           <ul className="space-y-2">
             <li>
               <Link
