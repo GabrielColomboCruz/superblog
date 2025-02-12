@@ -60,3 +60,4 @@ Abra http://localhost:3000 no seu navegador para ver o resultado.
 
 
 ### Este é um projeto em desenvolvimento logo sugeito a bugs
+## Esta incluido no projeto a pasta structure que contem o sql para criar o banco de dados
