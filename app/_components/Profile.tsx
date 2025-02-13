@@ -13,7 +13,7 @@ interface PostData {
 }
 
 interface ProfileViewerProps {
-  userId?: number;
+  userId?: string | string[];
 }
 
 const ProfileViewer: React.FC<ProfileViewerProps> = ({ userId }) => {

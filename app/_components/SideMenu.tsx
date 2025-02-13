@@ -58,7 +58,7 @@ const Sidebar = () => {
 
         {/* Navigation */}
         <nav className="flex-1 p-4">
-          <SearchBar onSearch={(query) => console.log("Search for:", query)} />
+          <SearchBar />
 
           <ul className="space-y-2">
             <li>
