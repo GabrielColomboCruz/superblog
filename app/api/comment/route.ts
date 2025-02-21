@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import ComentariosCRUD from "@/model/ComentarioCRUD";
+import NotificacaoCRUD from "@/model/NotificacaoCRUD";
 
 export async function GET(request: Request) {
   try {
@@ -53,17 +54,18 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    //console.log("📝 Recebendo requisição POST para criar comentário...");
+    console.log("📝 Recebendo requisição POST para criar comentário...");
 
     const data = await request.json();
     const Conteudo = data.Conteudo || null;
     const Usuario = data.Usuario || null;
     const Post = data.Post || null;
+    const Owner = data.Owner || null;
 
-    //console.log(
-    //  "📌 Dados recebidos ->",
-    //  `Conteudo: ${Conteudo}, Usuario: ${Usuario}, Post: ${Post}`
-    //);
+    console.log(
+      "📌 Dados recebidos ->",
+      `Conteudo: ${Conteudo}, Usuario: ${Usuario}, Post: ${Post}, Owner: ${Owner}`
+    );
 
     // 🚨 Segurança: Deve validar o usuário logado antes de criar comentários
     if (!Usuario) {
@@ -84,14 +86,32 @@ export async function POST(request: Request) {
       );
     }
 
-    //console.log("✅ Criando comentário...");
+    console.log("✅ Criando comentário...");
     const result = await ComentariosCRUD("create", {
       Conteudo,
       Usuario,
       Post,
     });
-
     //console.log("🎉 Comentário criado com sucesso:", result);
+
+    if (Owner) {
+      console.log("Comentario no post de ", Owner);
+      //sendNotification(Owner, `Novo comentario no seu post!`);
+    }
+    if (Usuario !== Owner) {
+      try {
+        console.log("🔔 Trying to create notification");
+        const result = await NotificacaoCRUD("create", {
+          Conteudo: `New comment on your post: "${Conteudo.substring(0, 10)}${
+            Conteudo.length > 10 ? "..." : ""
+          }"`,
+          Usuario: Owner,
+          Post,
+        });
+        console.log("Resesult : ", result);
+      } catch (error) {}
+    }
+
     return NextResponse.json({ status: 200, result });
   } catch (error) {
     console.error("❌ Erro ao criar comentário:", error);

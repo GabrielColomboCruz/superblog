@@ -71,7 +71,11 @@ const PostPage = () => {
           <Comment key={comment.id} comment={comment} />
         ))}
       </div>
-      <Commenter postId={Number(id)} onCommentPosted={fetchComments} />
+      <Commenter
+        postId={Number(id)}
+        owner={Number(post.usuario_id)}
+        onCommentPosted={fetchComments}
+      />
     </div>
   );
 };

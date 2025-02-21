@@ -4,10 +4,15 @@ import React, { useState } from "react";
 
 interface CommenterProps {
   postId: number;
+  owner: number;
   onCommentPosted?: () => void; // Optional callback when comment is posted successfully
 }
 
-const Commenter: React.FC<CommenterProps> = ({ postId, onCommentPosted }) => {
+const Commenter: React.FC<CommenterProps> = ({
+  postId,
+  owner,
+  onCommentPosted,
+}) => {
   const [commentText, setCommentText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -30,6 +35,7 @@ const Commenter: React.FC<CommenterProps> = ({ postId, onCommentPosted }) => {
           Post: postId,
           Conteudo: commentText,
           Usuario: session.user.id,
+          Owner: owner,
         }),
       });
       if (!res.ok) {

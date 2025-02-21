@@ -2,16 +2,31 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { getSession } from "next-auth/react";
 import Sidebar from "@/app/_components/SideMenu";
 
 const EditPost = () => {
   const { id } = useParams();
   const router = useRouter();
 
+  const [session, setSession] = useState(null);
+
   const [post, setPost] = useState({ titulo: "", conteudo: "", categoria: "" });
+  const [oldPost, setOldPost] = useState({
+    titulo: "",
+    conteudo: "",
+    categoria: "",
+  });
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  useEffect(() => {
+    const fetchSession = async () => {
+      const userSession = await getSession();
+      setSession(userSession);
+    };
+    fetchSession();
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -22,6 +37,11 @@ const EditPost = () => {
         const res = await fetch(`/api/posts?id=${id}`);
         const data = await res.json();
         setPost({
+          titulo: data[0]?.titulo || "",
+          conteudo: data[0]?.conteudo || "",
+          categoria: data[0]?.categoria || "",
+        });
+        setOldPost({
           titulo: data[0]?.titulo || "",
           conteudo: data[0]?.conteudo || "",
           categoria: data[0]?.categoria || "",
@@ -57,7 +77,7 @@ const EditPost = () => {
     const content = formData.get("content");
     const category = formData.get("category");
     try {
-      console.log(title, content, category);
+      //console.log(title, content, category);
       const res = await fetch(`/api/posts`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -72,8 +92,25 @@ const EditPost = () => {
       });
 
       if (res.ok) {
-        alert("Post updated successfully!");
-        router.push(`/specificPost/${id}`);
+        const res = await fetch(`/api/editedposts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+
+          body: JSON.stringify({
+            action: "create",
+            Titulo: oldPost.titulo,
+            Conteudo: oldPost.conteudo,
+            Usuario: session.user.id,
+            Categoria: category,
+            Post: id,
+          }),
+        });
+        console.log(res);
+
+        if (res.ok) {
+          alert("Post updated successfully!");
+          router.push(`/specificPost/${id}`);
+        }
       } else {
         setError("Failed to update post.");
       }

@@ -3,6 +3,7 @@ import { getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import SearchBar from "./SearchBar";
+import { NotificationBell } from "./NotificationBell";
 
 const Sidebar = () => {
   const [session, setSession] = useState(null);
@@ -53,6 +54,8 @@ const Sidebar = () => {
           <h1 className="text-3xl font-extrabold font-serif">
             <Link href="/">SuperBlog</Link>
           </h1>
+
+          <NotificationBell userId={session.user.id} />
           {<button onClick={() => setIsOpen(false)}>✖</button>}
         </div>
 
@@ -92,6 +95,29 @@ const Sidebar = () => {
               >
                 👤 Profile
               </Link>
+            </li>
+
+            <li>
+              <form
+                action="https://www.paypal.com/cgi-bin/webscr"
+                method="post"
+                target="_top"
+              >
+                <input type="hidden" name="cmd" value="_s-xclick" />
+                <input
+                  type="hidden"
+                  name="hosted_button_id"
+                  value="JA3QWWBNMC23L"
+                />
+                <input type="hidden" name="currency_code" value="BRL" />
+                <input
+                  type="image"
+                  src="https://www.paypalobjects.com/pt_BR/i/btn/btn_subscribe_LG.gif"
+                  name="submit"
+                  title="O PayPal é a forma fácil e segura de pagar suas compras on-line."
+                  alt="Assinar"
+                />
+              </form>
             </li>
           </ul>
         </nav>
