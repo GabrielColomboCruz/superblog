@@ -109,7 +109,9 @@ export async function POST(request: Request) {
           Post,
         });
         console.log("Resesult : ", result);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     return NextResponse.json({ status: 200, result });

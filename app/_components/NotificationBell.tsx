@@ -88,7 +88,7 @@ export function NotificationBell({ userId, postId }: NotificationBellProps) {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
-  }, [userId, postId]);
+  }, [userId, postId, fetchNotifications]);
 
   // Handle clicking outside to close the dropdown
   useEffect(() => {

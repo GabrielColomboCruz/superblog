@@ -90,7 +90,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { Id, Titulo, Conteudo, Categoria, Read } = await request.json();
+    const { Id, Read } = await request.json();
 
     if (!Id || !Read) {
       return NextResponse.json({ error: "Dados incompletos" }, { status: 400 });
