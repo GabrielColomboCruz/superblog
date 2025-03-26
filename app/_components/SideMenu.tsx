@@ -97,7 +97,7 @@ const Sidebar = () => {
               </Link>
             </li>
 
-            <li>
+            {/* <li>
               <form
                 action="https://www.paypal.com/cgi-bin/webscr"
                 method="post"
@@ -118,7 +118,7 @@ const Sidebar = () => {
                   alt="Assinar"
                 />
               </form>
-            </li>
+            </li> */}
           </ul>
         </nav>
 
